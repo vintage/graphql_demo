@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-BASE_DOMAIN = 'http://domain'
+BASE_DOMAIN = 'http://localhost:8000'
 
 
 # Application definition

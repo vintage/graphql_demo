@@ -20,7 +20,7 @@ class Movie(models.Model):
     min_age = models.IntegerField()
     poster = models.ImageField()
     rating = models.DecimalField(
-        max_digits=3, decimal_places=1, editable=False,
+        max_digits=3, decimal_places=1, default=0,
     )
     categories = models.ManyToManyField(MovieCategory, related_name='movies')
 

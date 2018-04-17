@@ -14,13 +14,30 @@ class Actor(DjangoObjectType):
 class MovieCategory(DjangoObjectType):
     class Meta:
         model = movie_models.MovieCategory
+        only_fields = ('id', 'name')
+
+
+class CastMember(DjangoObjectType):
+    class Meta:
+        model = movie_models.CastMember
 
 
 class Movie(DjangoObjectType):
-    poster = graphene.String(width=graphene.Int(), height=graphene.Int())
+    categories = graphene.List(MovieCategory)
+    cast = graphene.List(CastMember)
+    poster = graphene.String(
+        width=graphene.Int(),
+        height=graphene.Int(),
+    )
 
     class Meta:
         model = movie_models.Movie
+
+    def resolve_cast(self, info):
+        return self.cast.all()
+
+    def resolve_categories(self, info):
+        return self.categories.all()
 
     def resolve_poster(self, info, width=None, height=None):
         if self.poster and self.poster.file:
@@ -45,11 +62,6 @@ class Movie(DjangoObjectType):
         return None
 
 
-class CastMember(DjangoObjectType):
-    class Meta:
-        model = movie_models.CastMember
-
-
 class Query(graphene.ObjectType):
     movies = graphene.List(Movie)
     movie = graphene.Field(Movie, movie_id=graphene.Int())
@@ -67,15 +79,18 @@ class RateMovie(graphene.Mutation):
         rate = graphene.Int()
 
     new_rate = graphene.Float()
+    movie = graphene.Field(Movie)
 
     def mutate(self, info, movie_id, rate):
+        movie = movie_models.Movie.objects.get(pk=movie_id)
+
         rating = movie_models.MovieRating.objects.create(
-            movie_id=movie_id, value=rate,
+            movie=movie, value=rate,
         )
 
         new_rate = format(rating.movie.rating, '.1f')
 
-        return RateMovie(new_rate=new_rate)
+        return RateMovie(new_rate=new_rate, movie=movie)
 
 
 class Mutation(graphene.ObjectType):
