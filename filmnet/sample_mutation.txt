@@ -1,0 +1,5 @@
+mutation {
+  rateMovie(movieId:1, rate:10) {
+    newRate
+  }
+}

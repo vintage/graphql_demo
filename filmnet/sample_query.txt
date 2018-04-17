@@ -1,0 +1,15 @@
+query {
+  movies {
+    title
+    poster: poster
+    thumbnail:poster(width:50, height:50)
+    rating
+    cast {
+      actor {
+        firstName
+        lastName
+      }
+      name
+    }
+  }
+}
